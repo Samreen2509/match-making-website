@@ -29,7 +29,7 @@ const userSchema = new mongoose.Schema(
             required : true,
             validate(value){
                 if(!validator.isStrongPassword(value)){
-                    throw new Error("Password is weak : "+ value);
+                    throw new Error("Password is weak : " + value);
                 }
             }
         },
