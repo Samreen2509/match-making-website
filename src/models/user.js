@@ -8,12 +8,12 @@ const userSchema = new mongoose.Schema(
         firstName : {
             type : String,
             required : true,
-            minLength : 4,
+            minLength : 2,
             
         },
         lastName : {
             type : String,
-            minLength : 4,
+            minLength : 2,
             maxLength : 30,
         },
         email : {
@@ -75,6 +75,8 @@ const userSchema = new mongoose.Schema(
         timestamps : true,
     }
 );
+//creating index
+userSchema.index({firstName : 1, lastName : 1});
 userSchema.methods.getJWT = async function () {
     const user = this;
     const token = await jwt.sign({_id : user._id}, "matchMaking",{expiresIn : "7d",});

@@ -12,24 +12,24 @@ profileRouter.get("/profile/view",userAuth, async(req,res) => {
     }catch(err){
          res.status(400).send("Error" + err.message); 
        }
-   });
+  });
 
-   //profile updation api
-   profileRouter.patch("/profile/edit", userAuth, async(req,res) =>{
-    try{
-        if(!validateEditRequest)
-        {
-            throw new Error("Invalid edit request");
-        }
+//profile updation api
+profileRouter.patch("/profile/edit", userAuth, async(req,res) =>{
+  try{
+      if(!validateEditRequest)
+      {
+          throw new Error("Invalid edit request");
+      }
 
-        const loggedInUser = req.user;
-        Object.keys(req.body).forEach((key) => (loggedInUser[key] = req.body[key]));
-        res.send("Edit Succesful...");
+      const loggedInUser = req.user;
+      Object.keys(req.body).forEach((key) => (loggedInUser[key] = req.body[key]));
+      res.send("Edit Successful...");
 
-    }catch(err){
-         res.status(400).send("Error" + err.message); 
-       }
-     
-   });
+  }catch(err){
+       res.status(400).send("Error" + err.message); 
+     }
+   
+ });
 
 module.exports = profileRouter;
