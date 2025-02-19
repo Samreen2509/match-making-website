@@ -26,7 +26,7 @@ authRouter.post("/signup", async(req,res) => {
   
       const user = await User.findOne({email : email});
       if(!user){
-        throw new Error("Invalid credential");
+        return res.status(401).send("Please login...!"); //unauthorized user
       }
       const isPasswordValid = await user.validatePassword(password);
       if(isPasswordValid)
@@ -36,7 +36,7 @@ authRouter.post("/signup", async(req,res) => {
   
         //add token to the cookie and send the response back to the user
         res.cookie("token",token, {expires : new Date(Date.now() + 8*3600000), });
-        res.send("User login successfully");
+        res.send(user);
       }
       else {
         res.send("Invalid credential");
