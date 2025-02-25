@@ -1,7 +1,7 @@
 const express = require("express");
 const userAuth = require("../middlewares/auth");
 const ConnectionRequest = require("../models/connectionRequest");
-
+const User = require("../models/user");
 const userRouter = express.Router();
 
 //get all the pending connection request of the loggedin user
@@ -46,19 +46,36 @@ userRouter.get('/user/connection' ,userAuth, async(req,res) =>{
 // 2 his connection request
 // 3 his rejected connection
 // 4 already send the connection request
-userRouter.get('/user/feed', userAuth, async(req, res) =>{
+userRouter.get('/feed', userAuth, async(req, res) =>{
     try{
         const logedInUser = req.user;
-        const {status} = req.params
-        const allowedUser = ["accepted","requested"];
+        const page = parseInt(req.query.page) || 1;
+        let limit = parseInt(req.query.limit) || 10;
+        limit = limit>50 ? 50 : limit;
+        const skip = (page-1) * limit;
 
-        if(!allowedUser.includes(status)){
+        //find all connection request (sent + receive)
+        const connectionRequests = await ConnectionRequest.find({
+          $or: [{fromUserId : logedInUser._id},
+            {toUserId : logedInUser._id}],
+          }).select("fromUserId toUserId");
 
-        }
+        const hideUserFromFeed = new Set();
+        connectionRequests.forEach((req) => {
+          hideUserFromFeed.add(req.fromUserId.toString());
+          hideUserFromFeed.add(req.fromUserId.toString());
+        });
 
+        const users = await User.find({
+          $and: [
+            { _id : {$nin : Array.from(hideUserFromFeed)}},
+            { _id : {$ne : logedInUser._id}},
+          ],
+        }).select("firstName lastName age gender photoId about skill").skip(skip).limit(limit);
 
+        res.send(users);
     }catch(err){
-        res.status(400).send("Error : " +err.message);
+        res.status(400).json("Message : " + err.message);
     }
 });
   
